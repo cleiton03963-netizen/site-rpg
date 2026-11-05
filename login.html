@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="section" style="max-width:420px"><div class="panel"><h2>Entrar</h2>
+<label>Usuário</label><input id="u" autocomplete="username"><label>Senha</label><input id="p" type="password" autocomplete="current-password">
+<div class="err" id="e"></div>
+<button class="btn primary" id="in">Entrar</button> <button class="btn" id="reg">Cadastrar</button>
+<p style="font-size:.8rem;color:var(--muted);margin-top:1rem">Novos cadastros entram como jogador.</p></div></div>
+<script src="../js/database.js"></script><script src="../js/authentication.js"></script>
+<script>
+const go=f=>async()=>{try{await f(u.value,p.value);location.href='dashboard.html'}catch(x){e.textContent=x}};
+in_=document.getElementById('in');in_.onclick=go((a,b)=>Auth.login(a,b));reg.onclick=go((a,b)=>Auth.register(a,b));
+</script></body></html>

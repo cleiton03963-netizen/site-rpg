@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Famílias, Classes e Titãs — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('catalogo','Famílias, Classes e Titãs')</script>
+<script>
+boot('catalogo',a=>{const V={
+fam:()=>FAMILIAS.map(f=>`<div class="panel"><h3>${f.nome} <span class="tag">${f.raridade}</span></h3><p>${f.desc}</p><p><b>Passiva:</b> ${f.passiva}</p><p><b>Bônus:</b> ${Object.entries(f.bonus).map(([k,v])=>k+' +'+v).join(', ')}</p></div>`),
+cla:()=>CLASSES.map(c=>`<div class="panel"><h3>${c.nome}</h3><p>${c.desc}</p><p><b>Passiva:</b> ${c.passiva}</p><p><b>Ativas:</b> ${c.ativas.join('; ')}</p><p><b>Especial:</b> ${c.especial}</p><p><b>Exclusiva:</b> ${c.exclusiva}</p><p><b>Bônus:</b> ${Object.entries(c.bonus).map(([k,v])=>k+' +'+v).join(', ')}</p></div>`),
+tit:()=>TITAS.map(t=>`<div class="panel"><h3>${t.nome} <span class="tag">${t.raridade}</span></h3><p>Altura ${t.altura} · ${t.esp}</p><p><b>Suprema:</b> ${t.suprema} · <b>Custo:</b> ${t.custo} ET</p><p><b>Fraqueza:</b> ${t.fraqueza}</p></div>`)};
+a.innerHTML=`<div class="tabs"><button class="btn" data-t="fam">Famílias</button><button class="btn" data-t="cla">Classes</button><button class="btn" data-t="tit">Os nove Titãs</button></div><div class="grid" id="lst"></div>`;
+const show=t=>lst.innerHTML=V[t]().join('');a.onclick=e=>e.target.dataset.t&&show(e.target.dataset.t);show('fam')})
+</script></body></html>

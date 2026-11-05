@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criar Personagem — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('criar','Criar Personagem')</script>
+<script>
+boot('criar',a=>{const c=Chars.novo({nome:'',sobrenome:'',idade:18,aparencia:'',historia:'',categoria:'Soldado Humano',familia:FAMILIAS[0].nome,classe:CLASSES[0].nome,poder:''});
+const opt=(l,s)=>l.map(x=>`<option ${x===s?'selected':''}>${esc(x)}</option>`).join('');
+a.innerHTML=`<div class="grid"><div class="panel"><label>Nome</label><input id="nome" maxlength="30"><label>Sobrenome</label><input id="sob" maxlength="30">
+<label>Idade</label><input id="idade" type="number" min="10" max="120" value="18"><label>Categoria</label><select id="cat">${opt(['Soldado Humano','Despertado','Herdeiro Titânico','Ancestral'])}</select>
+<label>Família</label><select id="fam">${opt(FAMILIAS.map(f=>f.nome))}</select><label>Classe</label><select id="cla">${opt(CLASSES.map(f=>f.nome))}</select>
+<label>Poder titânico (apenas Despertado/Herdeiro/Ancestral)</label><select id="pod"><option value="">Nenhum</option>${opt(TITAS.map(t=>t.nome))}</select>
+<label>Aparência</label><textarea id="apa"></textarea><label>História pessoal</label><textarea id="his"></textarea></div>
+<div class="panel"><h3>Atributos — pontos livres: <span id="liv"></span></h3><div id="at"></div><p style="font-size:.8rem;color:var(--muted)">Limite inicial 5 por atributo. Bônus de família/classe aparecem em dourado.</p><div class="err" id="err"></div><button class="btn primary" id="ok">Criar personagem</button></div></div>`;
+const draw=()=>{liv.textContent=c.livres;at.innerHTML=ATTRS.map(x=>{const b=Chars.bonus({...c,familia:fam.value,classe:cla.value})[x]||0;
+return`<div class="attr"><b>${x}</b><button class="btn" data-a="${x}" data-d="-1">−</button><span>${c.attrs[x]}${b?` <span style="color:var(--gold)">+${b}</span>`:''}</span><button class="btn" data-a="${x}" data-d="1">+</button></div>`}).join('')};
+at.onclick=e=>{const t=e.target.dataset;if(t.a){Chars.gastar(c,t.a,+t.d);draw()}};fam.onchange=cla.onchange=draw;draw();
+ok.onclick=()=>{const n=nome.value.trim();err.textContent='';
+if(!n)return err.textContent='Informe o nome.';
+if(c.livres>0&&!confirm(`Ainda há ${c.livres} pontos livres. Criar mesmo assim?`))return;
+if(pod.value&&['Soldado Humano'].includes(cat.value))return err.textContent='Soldado Humano não possui poder titânico.';
+if(pod.value==='Titã Fundador'&&cat.value!=='Ancestral')return err.textContent='O Titã Fundador é exclusivo de Ancestrais.';
+Object.assign(c,{nome:n,sobrenome:sob.value.trim(),idade:+idade.value,categoria:cat.value,familia:fam.value,classe:cla.value,poder:pod.value,aparencia:apa.value,historia:his.value});
+c.hp=Chars.maxHP(c);c.et=Chars.maxET(c);Chars.save(c);location.href='ficha.html'}})
+</script></body></html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Missões — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('missoes','Missões')</script>
+<script>
+boot('missoes',a=>{const ms=Missions.all(),M=Auth.isMaster();
+a.innerHTML=`<div class="grid">${ms.map(m=>`<div class="panel"><h3>${esc(m.nome)}</h3><p>${esc(m.desc)}</p><p>${m.dif} · nível rec. ${m.nivel} · <b>${m.xp} XP</b></p><ul>${m.obj.map(o=>`<li>${esc(o)}</li>`).join('')}</ul><p>Recompensa: ${esc(m.rec)}</p><p><span class="tag">${m.estado}</span></p>
+${M&&m.estado==='disponível'?`<button class="btn" data-i="${m.id}" data-s="em andamento">Iniciar</button>`:''}${M&&m.estado==='em andamento'?`<button class="btn primary" data-i="${m.id}" data-s="fim">Concluir e dar XP</button>`:''}</div>`).join('')}</div>`;
+a.onclick=e=>{const t=e.target.dataset;if(!t.i||!M)return;if(t.s==='fim')Missions.concluir(t.i);else{ms.find(x=>x.id===t.i).estado=t.s;Missions.save(ms)}location.reload()}})
+</script></body></html>

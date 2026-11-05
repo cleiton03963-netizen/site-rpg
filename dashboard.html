@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel principal — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('dashboard','Painel principal')</script>
+<script>
+boot('dashboard',a=>{const m=Chars.mine(),me=Auth.user();
+a.innerHTML=`<div class="grid"><div class="panel"><h3>Bem-vindo, ${esc(me.nome)}</h3><p>Papel: <span class="tag">${me.role}</span></p></div>
+<div class="panel"><h3>Seus personagens</h3>${m.length?m.map(c=>`<p>${esc(c.nome)} — nível ${c.nivel} (${RARIDADE_NIVEL(c.nivel)})</p>`).join(''):'<p>Nenhum ainda. <a href="criar.html" style="color:var(--gold)">Criar personagem</a></p>'}</div>
+<div class="panel"><h3>Missões</h3><p>${Missions.all().filter(x=>x.estado==='em andamento').length} em andamento</p></div></div>`})
+</script></body></html>

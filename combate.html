@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Combate — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('combate','Combate')</script>
+<script>
+boot('combate',a=>{const m=Chars.mine();if(!m.length){a.innerHTML='<div class="panel">Crie um personagem primeiro.</div>';return}
+let c=m[0],en={nome:'Titã Aberrante',hp:60,max:60,def:12,atk:3};c.et??=Chars.maxET(c);
+const dr=()=>{a.innerHTML=`<div class="grid"><div class="panel"><h3>${esc(c.nome)}</h3>${bar(c.hp,Chars.maxHP(c),'#8b1a1a')}${bar(c.et,Chars.maxET(c),'#c9a24b')}
+<button class="btn" data-x="atq">Atacar</button> <button class="btn" data-x="def">Defender</button> <button class="btn" data-x="tit">Poder titânico</button></div>
+<div class="panel"><h3>${en.nome}</h3>${bar(en.hp,en.max,'#555')}<p>Defesa ${en.def} · Ataque +${en.atk}</p><button class="btn" id="rst">Novo inimigo</button></div></div>
+<div class="panel log" style="margin-top:1rem"><h3>Histórico</h3>${Combat.log.map(l=>`<p>${esc(l)}</p>`).join('')}</div>`;
+rst.onclick=()=>{en.hp=en.max;c.hp=Chars.maxHP(c);c.et=Chars.maxET(c);Combat.log=[];Chars.save(c);dr()}};
+a.onclick=e=>{const x=e.target.dataset.x;if(!x||c.hp<=0||en.hp<=0)return;
+if(x==='atq')Combat.ataque(c,en);if(x==='def')Combat.defender(c);if(x==='tit')Combat.titan(c,en);
+if(en.hp>0)Combat.inimigo(c,en);else Combat.say('Inimigo derrotado!');if(c.hp<=0)Combat.say('Você caiu em combate.');Chars.save(c);dr()};dr()})
+</script></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel do Mestre — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('mestre','Painel do Mestre')</script>
+<script>
+boot('mestre',a=>{if(!Auth.isMaster()){a.innerHTML='<div class="panel">Acesso restrito ao Mestre.</div>';return}
+const dr=()=>{const cs=Chars.all(),ms=Missions.all();a.innerHTML=`<h3>Personagens</h3><div class="grid">${cs.map(c=>`<div class="panel"><h3>${esc(c.nome)}</h3><p>Dono: ${esc(c.owner)} · Nv ${c.nivel} · XP ${c.xp}</p><p>PV ${c.hp}/${Chars.maxHP(c)} · ET ${c.et}/${Chars.maxET(c)}</p>
+<button class="btn" data-a="xp" data-i="${c.id}">+XP</button> <button class="btn" data-a="hp" data-i="${c.id}">PV</button> <button class="btn" data-a="et" data-i="${c.id}">ET</button> <button class="btn" data-a="hab" data-i="${c.id}">Habilidade</button> <button class="btn" data-a="del" data-i="${c.id}">Excluir</button></div>`).join('')||'<p>Sem personagens.</p>'}</div>
+<h3 style="margin-top:1.5rem">Usuários e classificação</h3><div class="grid">${DB.get('users',[]).map(u=>`<div class="panel"><b>${esc(u.nome)}</b> <span class="tag">${u.role}</span><br><button class="btn" data-a="role" data-n="${esc(u.nome)}" data-r="${u.role==='mestre'?'jogador':'mestre'}">Tornar ${u.role==='mestre'?'jogador':'mestre'}</button></div>`).join('')}</div>
+<h3 style="margin-top:1.5rem">Nova missão</h3><div class="panel"><label>Nome</label><input id="mn"><label>Descrição</label><textarea id="md"></textarea><label>Dificuldade</label><select id="mf">${Object.keys(XP_MISSAO).map(x=>`<option>${x}</option>`).join('')}</select><label>Nível recomendado</label><input id="ml" type="number" value="1" min="1"><label>Objetivos (um por linha)</label><textarea id="mo"></textarea><label>Recompensa</label><input id="mr"><button class="btn primary" id="mk">Criar missão</button></div>
+<h3 style="margin-top:1.5rem">Missões</h3><div class="grid">${ms.map(m=>`<div class="panel"><b>${esc(m.nome)}</b> <span class="tag">${m.estado}</span><br><button class="btn" data-a="dm" data-i="${m.id}">Excluir</button></div>`).join('')}</div>`;
+mk.onclick=()=>{if(!mn.value.trim())return alert('Informe o nome.');ms.push({id:crypto.randomUUID(),nome:mn.value.trim(),desc:md.value,dif:mf.value,nivel:+ml.value||1,obj:mo.value.split('\n').filter(Boolean),rec:mr.value,estado:'disponível',xp:XP_MISSAO[mf.value]});Missions.save(ms);dr()}};
+a.onclick=e=>{const t=e.target.dataset;if(!t.a)return;const cs=Chars.all(),c=cs.find(x=>x.id===t.i);
+if(t.a==='role'){try{Auth.setRole(t.n,t.r)}catch(x){alert(x)}return dr()}
+if(t.a==='dm'){Missions.save(Missions.all().filter(x=>x.id!==t.i));return dr()}
+if(!c)return;
+if(t.a==='xp'){const v=+prompt('XP a dar:');if(v>0)Chars.addXP(c,v)}
+if(t.a==='hp'){const v=+prompt('Novo PV:',c.hp);if(!isNaN(v))c.hp=Math.max(0,Math.min(v,Chars.maxHP(c)))}
+if(t.a==='et'){const v=+prompt('Nova ET:',c.et);if(!isNaN(v))c.et=Math.max(0,Math.min(v,Chars.maxET(c)))}
+if(t.a==='hab'){const v=prompt('Nome da habilidade:');if(v)(c.habilidades=c.habilidades||[]).push(v)}
+if(t.a==='del'){if(!confirm('Excluir?'))return;DB.set('chars',cs.filter(x=>x.id!==t.i));return dr()}
+DB.set('chars',cs);dr()};dr()})
+</script></body></html>
