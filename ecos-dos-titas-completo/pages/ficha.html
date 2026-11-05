@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minha Ficha — Ecos dos Titãs</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<script src="../js/database.js"></script><script src="../js/data.js"></script><script src="../js/authentication.js"></script>
+<script src="../js/characters.js"></script><script src="../js/missions.js"></script><script src="../js/combat.js"></script>
+<script src="../js/layout.js"></script><script src="../js/main.js"></script>
+<script>shell('ficha','Minha Ficha')</script>
+<script>
+boot('ficha',a=>{const m=Chars.mine();if(!m.length){a.innerHTML='<div class="panel">Nenhum personagem. <a href="criar.html" style="color:var(--gold)">Criar</a></div>';return}
+let i=0;const draw=()=>{const c=m[i];a.innerHTML=`<select id="sel">${m.map((x,k)=>`<option value="${k}" ${k===i?'selected':''}>${esc(x.nome)}</option>`).join('')}</select>
+<div class="grid"><div class="panel"><h3>${esc(c.nome)} ${esc(c.sobrenome)}</h3><p>${c.categoria} · ${c.classe} · Família ${c.familia}</p><p>Nível ${c.nivel} <span class="tag">${RARIDADE_NIVEL(c.nivel)}</span> · XP ${c.xp}</p>
+${bar(c.hp,Chars.maxHP(c),'#8b1a1a')}${bar(c.et,Chars.maxET(c),'#c9a24b')}<p>Poder: ${esc(c.poder)||'—'}</p><p>Habilidades concedidas: ${esc((c.habilidades||[]).join(', '))||'—'}</p></div>
+<div class="panel"><h3>Atributos (livres: ${c.livres})</h3>${ATTRS.map(x=>`<div class="attr"><b>${x}</b><button class="btn" data-a="${x}" data-d="1">+</button><span>${Chars.total(c,x)}</span></div>`).join('')}<p style="font-size:.8rem;color:var(--muted)">Limite atual por atributo: ${Chars.cap(c)}</p></div>
+<div class="panel"><h3>Editar</h3><label>Aparência</label><textarea id="apa">${esc(c.aparencia)}</textarea><label>História</label><textarea id="his">${esc(c.historia)}</textarea><button class="btn primary" id="sv">Salvar</button> <button class="btn" id="del">Excluir</button></div></div>`;
+sel.onchange=()=>{i=+sel.value;draw()};
+a.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{if(c.attrs[b.dataset.a]<Chars.cap(c)&&c.livres>0){c.attrs[b.dataset.a]++;c.livres--;Chars.save(c);draw()}});
+sv.onclick=()=>{c.aparencia=apa.value;c.historia=his.value;Chars.save(c);alert('Salvo.')};
+del.onclick=()=>{if(confirm('Excluir este personagem?')){DB.set('chars',Chars.all().filter(x=>x.id!==c.id));location.reload()}}};draw()})
+</script></body></html>
